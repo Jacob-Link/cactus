@@ -17,4 +17,4 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["."]
-include = ["app.py"]
+include = ["app.py", "models.py", "screens.py", "terminal.py", "widgets.py"]
