@@ -140,7 +140,7 @@ class PathPickerScreen(ModalScreen[str | None]):
             for path in self.paths:
                 lst.append(ListItem(Static(path)))
 
-            if lst.index >= len(self.paths):
+            if lst.index is None or lst.index >= len(self.paths):
                 lst.index = len(self.paths) - 1
 
     def action_cancel(self):
