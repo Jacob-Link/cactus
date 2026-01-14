@@ -262,3 +262,72 @@ class RenameSessionScreen(ModalScreen[str | None]):
 
     def action_cancel(self):
         self.dismiss(None)
+
+
+class InfoScreen(ModalScreen[None]):
+    """Modal screen showing setup instructions."""
+
+    BINDINGS = [
+        Binding("escape", "close", "Close"),
+        Binding("i", "close", "Close"),
+    ]
+
+    CSS = f"""
+    InfoScreen {{
+        align: center middle;
+    }}
+
+    InfoScreen .modal-container {{
+        width: 60%;
+        min-width: 50;
+        max-width: 70;
+        height: auto;
+        background: $surface;
+        border: tall {ACCENT_COLOR} 50%;
+        padding: 1 2;
+    }}
+
+    InfoScreen .modal-header {{
+        text-align: center;
+        color: $text;
+        padding: 0 0 1 0;
+    }}
+
+    InfoScreen .modal-title {{
+        text-style: bold;
+        color: {ACCENT_COLOR};
+    }}
+
+    InfoScreen .info-content {{
+        height: auto;
+        padding: 0 1;
+    }}
+
+    InfoScreen .info-step {{
+        height: auto;
+        padding: 0 0 0 0;
+        color: $text;
+    }}
+    """
+
+    def compose(self):
+        yield Vertical(
+            Vertical(
+                Static("GETTING STARTED", classes="modal-title"),
+                classes="modal-header",
+            ),
+            Vertical(
+                Static("1. You're in cactus, good to have you here!", classes="info-step"),
+                Static("2. Press [b]n[/b] to create a new session", classes="info-step"),
+                Static("3. In another terminal run:", classes="info-step"),
+                Static("   [b]tmux attach -t claude[/b]", classes="info-step"),
+                Static("", classes="info-step"),
+                Static("After setup, use [b]s[/b] to switch sessions.", classes="info-step"),
+                Static("No more tmux commands needed!", classes="info-step"),
+                classes="info-content",
+            ),
+            classes="modal-container",
+        )
+
+    def action_close(self):
+        self.dismiss(None)

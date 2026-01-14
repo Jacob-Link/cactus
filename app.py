@@ -7,15 +7,15 @@ import libtmux
 from textual.app import App
 from textual.binding import Binding
 from textual.containers import Vertical
-from textual.widgets import Static, Footer
+from textual.widgets import Static
 from textual import work
 
 from models import (
     NUM_LINES_CAPTURE, CHECK_INTERVAL, EXPORT_CAPTURED,
-    Status, Session, save_path
+    ACCENT_COLOR, Status, Session, save_path
 )
 from terminal import TerminalClient, detect_status
-from screens import NewSessionScreen, RenameSessionScreen
+from screens import NewSessionScreen, RenameSessionScreen, InfoScreen
 from widgets import SessionItem, WrappingListView
 
 
@@ -37,14 +37,22 @@ class CactusApp(App):
         color: $text-disabled;
         text-style: italic;
     }
+    #footer {
+        dock: bottom;
+        height: 1;
+        background: $background;
+        color: $text-muted;
+        text-align: center;
+    }
     """
 
     BINDINGS = [
-        Binding("n", "new_session", "New"),
-        Binding("e", "rename_session", "Rename"),
-        Binding("s", "switch_session", "Switch"),
-        Binding("d", "delete_session", "Delete"),
-        Binding("q", "quit", "Quit"),
+        Binding("n", "new_session", "New", show=False),
+        Binding("e", "rename_session", "Rename", show=False),
+        Binding("s", "switch_session", "Switch", show=False),
+        Binding("d", "delete_session", "Delete", show=False),
+        Binding("i", "info", "Info", show=False),
+        Binding("q", "quit", "Quit", show=False),
     ]
 
     STATUS_PRIORITY = {
@@ -67,7 +75,7 @@ class CactusApp(App):
             id="header-bar",
         )
         yield WrappingListView(id="list")
-        yield Footer()
+        yield Static(f"[b {ACCENT_COLOR}]n[/] new  [b {ACCENT_COLOR}]s[/] switch  [b {ACCENT_COLOR}]e[/] rename  [b {ACCENT_COLOR}]d[/] delete  [b {ACCENT_COLOR}]i[/] info  [b {ACCENT_COLOR}]q[/] quit", id="footer")
 
     def on_mount(self):
         self.set_interval(CHECK_INTERVAL, self._update_status)
@@ -212,6 +220,9 @@ class CactusApp(App):
         self.terminal.delete_session(session.tmux_session_name)
         self.sessions.remove(session)
         self._refresh_list()
+
+    def action_info(self):
+        self.push_screen(InfoScreen())
 
 
 def main():
