@@ -37,7 +37,6 @@ class CactusApp(App):
         color: $text-disabled;
         text-style: italic;
     }
-    #hint { text-align: center; color: $text-muted; padding: 1; }
     """
 
     BINDINGS = [
@@ -68,7 +67,6 @@ class CactusApp(App):
             id="header-bar",
         )
         yield WrappingListView(id="list")
-        yield Static("In another terminal: tmux attach -t <session-name>", id="hint")
         yield Footer()
 
     def on_mount(self):
@@ -157,11 +155,7 @@ class CactusApp(App):
             is_active=True,
         ))
         self._refresh_list()
-
-        if self.terminal.switch_to_session(tmux_name):
-            self.query_one("#hint").update(f"Switched to: {tmux_name}")
-        else:
-            self.query_one("#hint").update(f"Attach: tmux attach -t {tmux_name}")
+        self.terminal.switch_to_session(tmux_name)
 
     @work
     async def action_rename_session(self):
@@ -180,7 +174,6 @@ class CactusApp(App):
         session.name = new_name
         session.tmux_session_name = new_tmux_name
         self._refresh_list()
-        self.query_one("#hint").update(f"Renamed to: {new_name}")
 
     def action_switch_session(self):
         lst = self.query_one("#list", WrappingListView)
@@ -198,9 +191,6 @@ class CactusApp(App):
                 session.status = Status.READ
 
             self._refresh_list()
-            self.query_one("#hint").update(f"Switched to: {session.tmux_session_name}")
-        else:
-            self.query_one("#hint").update(f"No tmux client! Run: tmux attach -t {session.tmux_session_name}")
 
     def action_delete_session(self):
         lst = self.query_one("#list", WrappingListView)
@@ -218,7 +208,6 @@ class CactusApp(App):
                 for s in self.sessions:
                     s.is_active = False
                 target.is_active = True
-                self.query_one("#hint").update(f"Switched to: {target.tmux_session_name}")
 
         self.terminal.delete_session(session.tmux_session_name)
         self.sessions.remove(session)
