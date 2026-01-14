@@ -4,6 +4,12 @@ import subprocess
 
 from models import Status
 
+RED_TRIGGERS = [
+    "❯ 1.",
+    "Enter to select",
+    "Esc to cancel",
+]
+
 
 class TerminalClient:
     """Handles all tmux operations via subprocess."""
@@ -79,16 +85,19 @@ def detect_status(content: str, last_content: str, current_status: Status) -> tu
     Detect session status from pane content.
     Returns (new_status, changed).
     """
-    if content != last_content:
-        return Status.WORKING, True
-
-    if ">" in content:
-        # Only set to READY if not already READ
-        if current_status != Status.READ:
-            return Status.READY, current_status != Status.READY
-        return Status.READ, False
-
-    if any(p in content for p in ["Would you like to proceed?", "1. Yes", "Do you want to"]):
+    # RED: Menu waiting for selection
+    if any(trigger in content for trigger in RED_TRIGGERS):
         return Status.WAITING, current_status != Status.WAITING
 
+    # GREEN: Separator + prompt present, and content before prompt is stable
+    if "───" in content and "❯" in content:
+        before_prompt = content.split("❯")[0]
+        last_before_prompt = last_content.split("❯")[0] if "❯" in last_content else ""
+
+        if before_prompt == last_before_prompt:
+            if current_status != Status.READ:
+                return Status.READY, current_status != Status.READY
+            return Status.READ, False
+
+    # YELLOW: Default - working
     return Status.WORKING, current_status != Status.WORKING
