@@ -28,7 +28,7 @@ First time only: `tmux attach -t claude-<name>` in another terminal to interact 
 
 ## Keys
 
-`n` new · `s` switch · `e` rename · `d` delete · `q` quit
+`n` new · `s` switch · `e` rename · `d` delete · `i` info · `q` quit
 
 ## Status Colors
 
