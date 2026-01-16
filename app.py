@@ -110,6 +110,9 @@ class CactusApp(App):
                 with open(f"{s.name}_output.txt", "w", encoding="utf-8") as f:
                     f.write("\n".join(lines))
 
+            # Strip trailing empty lines (strip() returns "" for whitespace-only, which is falsy)
+            while lines and not lines[-1].strip():
+                lines.pop()
             content = "\n".join(lines[-NUM_LINES_CAPTURE:])
             new_status, status_changed = detect_status(content, s.last_content, s.status)
 

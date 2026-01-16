@@ -9,8 +9,8 @@ from pathlib import Path
 
 # Configuration
 NUM_LINES_CAPTURE = 8
-CHECK_INTERVAL = 2.5
-EXPORT_CAPTURED = False
+CHECK_INTERVAL    = 2.5
+EXPORT_CAPTURED   = False
 
 # Paths
 CACTUS_DIR = Path.home() / ".cactus"
