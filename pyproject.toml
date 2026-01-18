@@ -1,6 +1,6 @@
 [project]
 name = "cactus"
-version = "0.1.3"
+version = "0.1.4"
 description = "Claude Code Terminal Session Manager"
 requires-python = ">=3.10"
 dependencies = [
