@@ -15,7 +15,7 @@ from models import (
     ACCENT_COLOR, Status, Session, save_path
 )
 from terminal import TerminalClient, detect_status
-from screens import NewSessionScreen, RenameSessionScreen, InfoScreen
+from screens import NewSessionScreen, RenameSessionScreen, InfoScreen, DeleteConfirmScreen
 from widgets import SessionItem, WrappingListView
 
 
@@ -203,12 +203,17 @@ class CactusApp(App):
 
             self._refresh_list()
 
-    def action_delete_session(self):
+    @work
+    async def action_delete_session(self):
         lst = self.query_one("#list", WrappingListView)
         if not lst.highlighted_child or not isinstance(lst.highlighted_child, SessionItem):
             return
 
         session = lst.highlighted_child.session
+
+        confirmed = await self.push_screen_wait(DeleteConfirmScreen(session.name))
+        if not confirmed:
+            return
 
         # Switch to another session before deleting to avoid tmux detach
         if len(self.sessions) > 1:

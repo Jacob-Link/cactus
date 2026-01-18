@@ -331,3 +331,64 @@ class InfoScreen(ModalScreen[None]):
 
     def action_close(self):
         self.dismiss(None)
+
+
+class DeleteConfirmScreen(ModalScreen[bool]):
+    """Modal screen for confirming session deletion."""
+
+    BINDINGS = [
+        Binding("escape", "cancel", "Cancel"),
+        Binding("enter", "confirm", "Confirm"),
+    ]
+
+    CSS = """
+    DeleteConfirmScreen {
+        align: center middle;
+    }
+
+    DeleteConfirmScreen .modal-container {
+        width: 36;
+        height: 5;
+        background: $surface;
+        border: tall #e74c3c 50%;
+        padding: 0 1;
+    }
+
+    DeleteConfirmScreen .modal-title {
+        width: 100%;
+        text-align: center;
+        text-style: bold;
+        color: #e74c3c;
+    }
+
+    DeleteConfirmScreen .session-name {
+        width: 100%;
+        text-align: center;
+        color: $text;
+    }
+
+    DeleteConfirmScreen .hint {
+        width: 100%;
+        text-align: center;
+        color: $text-muted;
+        text-style: italic;
+    }
+    """
+
+    def __init__(self, session_name: str):
+        super().__init__()
+        self.session_name = session_name
+
+    def compose(self):
+        yield Vertical(
+            Static("delete session?", classes="modal-title"),
+            Static(f"'{self.session_name}'", classes="session-name"),
+            Static("enter / esc", classes="hint"),
+            classes="modal-container",
+        )
+
+    def action_confirm(self):
+        self.dismiss(True)
+
+    def action_cancel(self):
+        self.dismiss(False)
